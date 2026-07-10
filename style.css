@@ -1,0 +1,496 @@
+/* ===================================================
+   Crimson Shrine — frosted-glass fan-site skin
+   Retro Touhou-wiki aesthetic: translucent white panels,
+   outset borders, backdrop blur, KosugiMaru type, blue selection.
+   =================================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@font-face {
+  font-family: KosugiMaru;
+  src: url(fonts/KosugiMaru-Regular.ttf);
+  font-display: swap;
+}
+
+::selection { background-color: #66abebbf; }
+::-moz-selection { background-color: #66abebbf; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background-image: url('/images/hakurei.jpg');
+  background-size: cover;
+  background-position: center;
+  background-color: #2a2338; /* fallback if the image isn't present */
+  font-family: KosugiMaru, 'Yu Gothic', 'Hiragino Maru Gothic ProN', 'Segoe UI', sans-serif;
+  color: #1a1a1a;
+}
+
+#arcade {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- glass panel base ---------- */
+.screen {
+  width: min(92vw, 640px);
+  max-height: 94vh;
+  overflow-y: auto;
+  padding: 32px 26px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+
+  background-color: rgba(255, 255, 255, 0.486);
+  border: 2px outset gray;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  color: #1a1a1a;
+}
+
+.hidden { display: none !important; }
+
+.overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(20, 16, 28, 0.55);
+  justify-content: center;
+  z-index: 50;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.overlay > .screen,
+#screen-pause.screen {
+  background-color: rgba(255, 255, 255, 0.486);
+  border: 2px outset gray;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.torii-mark {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(196, 40, 61, 0.4));
+  display: inline-block;
+}
+
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin {
+  100% { -webkit-transform: rotate(360deg); transform: rotate(360deg); }
+}
+
+.game-title {
+  margin: 0;
+  font-size: clamp(28px, 6vw, 44px);
+  letter-spacing: 0.04em;
+  font-weight: bold;
+  color: #1a1a1a;
+  transition: 0.5s;
+}
+
+.game-title:hover { letter-spacing: 0.06em; }
+
+.subtitle {
+  display: block;
+  font-size: 14px;
+  letter-spacing: 0.28em;
+  color: #7a2233;
+  margin-top: 6px;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.flavor {
+  color: #3a3a3a;
+  font-size: 15px;
+  max-width: 46ch;
+  line-height: 1.6;
+  margin: 4px 0 10px;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  color: #1a1a1a;
+  margin: 0 0 6px;
+  padding-bottom: 10px;
+  width: 100%;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  display: block;
+  width: 100%;
+  margin-top: 10px;
+  border-bottom: 1px solid #000;
+}
+
+.menu-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: min(100%, 320px);
+  margin-top: 8px;
+}
+
+/* ---------- buttons (nav-button style) ---------- */
+.menu-item {
+  font-family: inherit;
+  font-size: 20px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  color: black;
+  background-color: rgba(255, 255, 255, 0.486);
+  border: 2px outset gray;
+  padding: 10px 18px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.menu-item:hover, .menu-item.is-active {
+  filter: brightness(80%);
+  letter-spacing: 5px;
+}
+
+.menu-item:active {
+  border-style: inset;
+}
+
+.hint {
+  color: #2a2a2a;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  margin-top: 6px;
+  text-shadow: 0 1px 2px rgba(255,255,255,0.4);
+}
+
+/* ---------- How to play ---------- */
+.howto-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 10px;
+  width: 100%;
+  margin: 8px 0;
+}
+
+.howto-card {
+  border: 2px outset gray;
+  background-color: rgba(255, 255, 255, 0.35);
+  padding: 14px;
+  font-size: 13px;
+  color: #1a1a1a;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.key {
+  display: inline-block;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  color: #1a1a1a;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid #555;
+  padding: 2px 8px;
+  margin: 0 4px 6px 0;
+  letter-spacing: 0.05em;
+}
+
+/* ---------- Character select ---------- */
+.char-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .char-grid { grid-template-columns: 1fr; }
+}
+
+.char-card {
+  font-family: inherit;
+  color: #1a1a1a;
+  background-color: rgba(255, 255, 255, 0.35);
+  border: 2px outset gray;
+  padding: 18px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: 0.5s;
+}
+
+.char-card:hover, .char-card.is-active {
+  filter: brightness(92%);
+  border-color: #c4283d;
+}
+
+.char-card h3 {
+  margin: 4px 0 0;
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  color: #1a1a1a;
+}
+
+.char-role {
+  color: #7a2233;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  margin: 0;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.char-desc {
+  font-size: 12.5px;
+  color: #2a2a2a;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.char-sprite {
+  width: 42px; height: 42px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.3);
+}
+
+.reimu-sprite {
+  background: radial-gradient(circle at 35% 30%, #ff6a80, #c4283d 70%);
+}
+
+.marisa-sprite {
+  background: radial-gradient(circle at 35% 30%, #ffe08a, #d4af6a 70%);
+}
+
+/* ---------- Game screen ---------- */
+#screen-game {
+  padding: 20px;
+  gap: 10px;
+  background-color: transparent;
+  border: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.game-frame {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.486);
+  border: 2px outset gray;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.canvas-wrap {
+  position: relative;
+  line-height: 0;
+}
+
+#canvas {
+  display: block;
+  background: #05040a;
+  border: 2px inset gray;
+  image-rendering: pixelated;
+}
+
+/* ---- spellcard declaration banner ---- */
+.card-banner {
+  position: absolute;
+  top: 14%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  pointer-events: none;
+  animation: card-banner-in 0.5s ease-out;
+}
+
+.card-banner.hidden { display: none; }
+
+@keyframes card-banner-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.card-banner-rule {
+  height: 1px;
+  margin: 0 20px 6px;
+  background: linear-gradient(90deg, transparent, #d4af6a, transparent);
+}
+
+.card-banner-text {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: #fff5e0;
+  text-shadow: 0 0 12px rgba(196,40,61,0.9), 0 0 3px #000;
+  padding: 4px 10px;
+}
+
+.card-label {
+  color: #ff8aa0;
+  margin-right: 8px;
+  font-weight: bold;
+}
+
+.card-title {
+  font-style: italic;
+  color: #ffe9c6;
+}
+
+/* ---- bonus countdown timer ---- */
+.card-timer {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  text-align: left;
+  color: #f0e6d2;
+  text-shadow: 0 0 4px #000;
+  font-size: 11px;
+}
+
+.card-timer.hidden { display: none; }
+
+.card-timer-value {
+  font-size: 22px;
+  color: #ffe08a;
+  letter-spacing: 0.02em;
+}
+
+.card-timer-label { color: #cfc4dd; margin-top: 2px; }
+.card-history { color: #cabfd6; margin-top: 1px; font-size: 10px; }
+
+/* ---- capture result flash ---- */
+.card-result {
+  position: absolute;
+  top: 46%;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+  color: #ffe08a;
+  text-shadow: 0 0 20px rgba(212,175,106,0.9), 0 0 4px #000;
+  animation: card-result-pop 1.4s ease-out forwards;
+  pointer-events: none;
+}
+
+.card-result.hidden { display: none; }
+.card-result.failed { color: #ff4d6d; text-shadow: 0 0 20px rgba(255,77,109,0.9), 0 0 4px #000; }
+
+@keyframes card-result-pop {
+  0%   { opacity: 0; transform: scale(0.8); }
+  15%  { opacity: 1; transform: scale(1.05); }
+  25%  { opacity: 1; transform: scale(1); }
+  80%  { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ---------- side HUD panel ---------- */
+.hud {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 160px;
+  text-align: left;
+  color: #1a1a1a;
+}
+
+.hud-difficulty {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  font-weight: bold;
+  color: #1a1a1a;
+  border: 1px solid #555;
+  background: rgba(255,255,255,0.4);
+  padding: 3px 8px;
+  align-self: flex-start;
+  margin-bottom: 4px;
+}
+
+.hud-block {
+  border-bottom: 1px solid rgba(0,0,0,0.2);
+  padding-bottom: 6px;
+}
+
+.hud-label {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #4a4a4a;
+  font-weight: bold;
+}
+
+.hud-value { font-size: 18px; color: #1a1a1a; letter-spacing: 0.02em; }
+.hud-subvalue { font-size: 11px; color: #4a4a4a; margin-top: 2px; }
+
+.hearts, .stars { display: flex; gap: 3px; font-size: 15px; }
+.hearts span { color: #c4283d; }
+.hearts.bombs span { color: #b8860b; }
+.stars span.filled { color: #b8860b; }
+.stars span.empty { color: #8a8a8a; opacity: 0.5; }
+
+.power-bar {
+  width: 100%;
+  height: 6px;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid #555;
+  margin-top: 4px;
+}
+.power-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4a90d9, #b8860b);
+  width: 25%;
+  transition: width 0.2s ease;
+}
+
+.hud-boss { margin-top: auto; }
+.hud-boss .hud-label { color: #7a2233; font-size: 11px; letter-spacing: 0.06em; }
+.boss-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(0,0,0,0.15);
+  border: 1px solid #7a2233;
+  margin-top: 4px;
+}
+.boss-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #c4283d, #ff8a9c);
+  width: 100%;
+  transition: width 0.2s ease;
+}
+
+@media (max-width: 700px) {
+  .game-frame { flex-direction: column; align-items: center; }
+  .hud { flex-direction: row; flex-wrap: wrap; width: 100%; max-width: 480px; justify-content: space-between; }
+  .hud-block { flex: 1 1 30%; }
+}
+
+/* ---------- Game over / victory ---------- */
+.game-over-title { color: #7a2233; }
+.victory-title { color: #8a6a1a; }

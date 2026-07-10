@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crimson Shrine ~ Danmaku Vespers</title>
+<link rel="stylesheet" href="style.css?v=2">
+</head>
+<body>
+
+<div id="arcade">
+
+  <!-- ===== TITLE SCREEN ===== -->
+  <section id="screen-title" class="screen">
+    <img class="torii-mark" src="/images/placeholder_touhou.png" alt="" aria-hidden="true">
+    <h1 class="game-title">CRIMSON SHRINE<span class="subtitle">~ Danmaku Vespers ~</span></h1>
+    <p class="flavor">Three trials guard the mountain path. Dodge the dusk, or become part of it.</p>
+    <div class="menu-list" id="title-menu">
+      <button class="menu-item is-active" data-action="start">Begin Pilgrimage</button>
+      <button class="menu-item" data-action="howto">Talismans &amp; Controls</button>
+    </div>
+    <p class="hint">↑↓ select · Z / Enter confirm</p>
+  </section>
+
+  <!-- ===== HOW TO PLAY ===== -->
+  <section id="screen-howto" class="screen hidden">
+    <h2 class="section-title">Talismans &amp; Controls</h2>
+    <div class="howto-grid">
+      <div class="howto-card"><span class="key">↑ ↓ ← →</span><span class="key">W A S D</span><p>Move</p></div>
+      <div class="howto-card"><span class="key">Shift</span><p>Focus — slow, precise movement. Reveals your true hitbox.</p></div>
+      <div class="howto-card"><span class="key">Z</span><p>Fire — hold for continuous shots</p></div>
+      <div class="howto-card"><span class="key">X</span><p>Spell Bomb — clears bullets, grants brief invincibility</p></div>
+      <div class="howto-card"><span class="key">P / Esc</span><p>Pause</p></div>
+      <div class="howto-card"><span class="key">Graze</span><p>Skim bullets without focus for bonus score</p></div>
+    </div>
+    <button class="menu-item" data-action="back-title">Back</button>
+  </section>
+
+  <!-- ===== CHARACTER SELECT ===== -->
+  <section id="screen-charselect" class="screen hidden">
+    <h2 class="section-title">Choose Your Miko</h2>
+    <div class="char-grid" id="char-grid">
+      <button class="char-card is-active" data-char="reimu">
+        <div class="char-sprite reimu-sprite"></div>
+        <h3>Reimu</h3>
+        <p class="char-role">Homing Amulets</p>
+        <p class="char-desc">Wide, forgiving spread that curves toward foes. Bomb: a nova of sealing charms.</p>
+      </button>
+      <button class="char-card" data-char="marisa">
+        <div class="char-sprite marisa-sprite"></div>
+        <h3>Marisa</h3>
+        <p class="char-role">Focused Starlight</p>
+        <p class="char-desc">Narrow, piercing beam with high damage. Bomb: one devastating laser.</p>
+      </button>
+    </div>
+    <div class="menu-list">
+      <button class="menu-item" data-action="launch">Enter Stage I</button>
+      <button class="menu-item" data-action="back-title">Back</button>
+    </div>
+  </section>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <section id="screen-game" class="screen hidden">
+    <div class="game-frame">
+      <div class="canvas-wrap">
+        <canvas id="canvas" width="480" height="640"></canvas>
+
+        <!-- spellcard declaration banner -->
+        <div class="card-banner hidden" id="card-banner">
+          <div class="card-banner-rule"></div>
+          <div class="card-banner-text">
+            <span class="card-label" id="card-banner-label">Sign</span>
+            <span class="card-title" id="card-banner-title">"Card Name"</span>
+          </div>
+        </div>
+
+        <!-- bonus countdown timer (top-left, active during a card) -->
+        <div class="card-timer hidden" id="card-timer">
+          <div class="card-timer-value" id="card-timer-value">30.00</div>
+          <div class="card-timer-label">Bonus <span id="card-status">—</span></div>
+          <div class="card-history">History <span id="card-history">00/00</span></div>
+        </div>
+
+        <!-- capture result flash -->
+        <div class="card-result hidden" id="card-result">CAPTURED</div>
+      </div>
+
+      <aside class="hud" id="hud">
+        <div class="hud-difficulty">NORMAL</div>
+        <div class="hud-block">
+          <div class="hud-label">High Score</div>
+          <div class="hud-value" id="hud-highscore">0</div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-label">Score</div>
+          <div class="hud-value" id="hud-score">0</div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-label">Lives</div>
+          <div class="hud-value hearts" id="hud-lives"></div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-label">Bombs</div>
+          <div class="hud-value hearts bombs" id="hud-bombs"></div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-label">Spellcards</div>
+          <div class="hud-value stars" id="hud-cards"></div>
+          <div class="hud-subvalue" id="hud-cards-count">0/0</div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-label">Power</div>
+          <div class="hud-value" id="hud-power">1.00/4.00</div>
+          <div class="power-bar"><div class="power-bar-fill" id="hud-power-fill"></div></div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-label">Graze</div>
+          <div class="hud-value" id="hud-graze">0</div>
+        </div>
+        <div class="hud-block">
+          <div class="hud-label">Stage</div>
+          <div class="hud-value" id="hud-stage">I</div>
+        </div>
+        <div class="hud-boss hidden" id="hud-boss">
+          <div class="hud-label" id="hud-boss-name">—</div>
+          <div class="boss-bar"><div class="boss-bar-fill" id="hud-boss-fill"></div></div>
+        </div>
+      </aside>
+    </div>
+    <p class="hint">P / Esc to pause</p>
+  </section>
+
+  <!-- ===== PAUSE OVERLAY ===== -->
+  <section id="screen-pause" class="screen overlay hidden">
+    <h2 class="section-title">Paused</h2>
+    <div class="menu-list">
+      <button class="menu-item is-active" data-action="resume">Resume</button>
+      <button class="menu-item" data-action="quit">Abandon Run</button>
+    </div>
+  </section>
+
+  <!-- ===== GAME OVER ===== -->
+  <section id="screen-gameover" class="screen hidden">
+    <h2 class="section-title game-over-title">The Shrine Claims You</h2>
+    <p class="flavor" id="gameover-score">Final Score: 0</p>
+    <div class="menu-list">
+      <button class="menu-item is-active" data-action="retry">Try Again</button>
+      <button class="menu-item" data-action="quit">Title Screen</button>
+    </div>
+  </section>
+
+  <!-- ===== VICTORY ===== -->
+  <section id="screen-victory" class="screen hidden">
+    <h2 class="section-title victory-title">Dawn Breaks Over the Shrine</h2>
+    <p class="flavor" id="victory-score">Final Score: 0</p>
+    <div class="menu-list">
+      <button class="menu-item is-active" data-action="retry">Play Again</button>
+      <button class="menu-item" data-action="quit">Title Screen</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="js/utils.js?v=2"></script>
+<script src="js/input.js?v=2"></script>
+<script src="js/bullet.js?v=2"></script>
+<script src="js/player.js?v=2"></script>
+<script src="js/enemy.js?v=2"></script>
+<script src="js/boss.js?v=2"></script>
+<script src="js/stages.js?v=2"></script>
+<script src="js/game.js?v=2"></script>
+<script src="js/main.js?v=2"></script>
+</body>
+</html>
