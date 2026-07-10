@@ -88,8 +88,8 @@ body {
 
 /* ---------- Title ---------- */
 .torii-mark {
-  width: 80px;
-  height: 80px;
+  width: 140px;
+  height: 140;
   object-fit: contain;
   filter: drop-shadow(0 0 12px rgba(196, 40, 61, 0.4));
   display: inline-block;
