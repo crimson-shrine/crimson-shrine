@@ -10,6 +10,8 @@ const CHARACTERS = {
     hitboxRadius: 3,
     grazeRadius: 16,
     fireDelay: 0.09,
+    sprite: '/images/reimu.png',
+    spriteScale: 0.15, // tweak if the sprite renders too big/small in-game
     fire(game, player, t) {
       const bullets = game.playerBullets;
       const spread = player.focused ? 0.10 : 0.34;
@@ -41,6 +43,8 @@ const CHARACTERS = {
     hitboxRadius: 3,
     grazeRadius: 16,
     fireDelay: 0.05,
+    sprite: '/images/marisa.png',
+    spriteScale: 0.12, // tweak if the sprite renders too big/small in-game
     fire(game, player, t) {
       const bullets = game.playerBullets;
       const dx = player.focused ? 0 : Math.sin(t * 14) * 10;
@@ -67,6 +71,18 @@ const CHARACTERS = {
   },
 };
 
+// cache loaded sprite images across Player instances (avoid reloading on respawn/restart)
+const _spriteCache = {};
+function getCharacterSprite(src) {
+  if (!_spriteCache[src]) {
+    const img = new Image();
+    img.src = src;
+    _spriteCache[src] = { img, loaded: false };
+    img.onload = () => { _spriteCache[src].loaded = true; };
+  }
+  return _spriteCache[src];
+}
+
 class Player {
   constructor(charKey, bounds) {
     this.def = CHARACTERS[charKey];
@@ -83,6 +99,7 @@ class Player {
     this.alive = true;
     this.respawnTimer = 0;
     this.blink = 0;
+    this.spriteEntry = getCharacterSprite(this.def.sprite);
   }
 
   get hitboxRadius() { return this.def.hitboxRadius; }
@@ -172,7 +189,7 @@ class Player {
     ctx.stroke();
     ctx.globalAlpha = flashing ? 0.4 : 1;
 
-    // aura core glow
+    // aura core glow (sits behind the sprite)
     ctx.beginPath();
     ctx.fillStyle = this.def.color;
     ctx.shadowColor = this.def.color;
@@ -180,28 +197,38 @@ class Player {
     ctx.globalAlpha *= 0.9;
     ctx.arc(0, 0, 9, 0, TAU);
     ctx.fill();
-
-    // body silhouette (miko/witch robe)
     ctx.globalAlpha = flashing ? 0.4 : 1;
-    ctx.fillStyle = '#1a1424';
-    ctx.beginPath();
-    ctx.moveTo(0, -15);
-    ctx.lineTo(10, 6);
-    ctx.lineTo(9, 13);
-    ctx.lineTo(-9, 13);
-    ctx.lineTo(-10, 6);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = this.def.color;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
 
-    // hair ornament / bow accent
-    ctx.fillStyle = this.def.color;
-    ctx.beginPath();
-    ctx.moveTo(-5, -13); ctx.lineTo(-1, -16); ctx.lineTo(-1, -11); ctx.closePath();
-    ctx.moveTo(5, -13); ctx.lineTo(1, -16); ctx.lineTo(1, -11); ctx.closePath();
-    ctx.fill();
+    // character sprite (reimu.png / marisa.png), falls back to the old
+    // vector silhouette if the image hasn't loaded yet (e.g. first frame)
+    if (this.spriteEntry.loaded) {
+      const img = this.spriteEntry.img;
+      const scale = this.def.spriteScale || 1;
+      const drawW = img.naturalWidth * scale;
+      const drawH = img.naturalHeight * scale;
+      ctx.drawImage(img, -drawW / 2, -drawH / 2 + 4, drawW, drawH);
+    } else {
+      // body silhouette (miko/witch robe) fallback
+      ctx.fillStyle = '#1a1424';
+      ctx.beginPath();
+      ctx.moveTo(0, -15);
+      ctx.lineTo(10, 6);
+      ctx.lineTo(9, 13);
+      ctx.lineTo(-9, 13);
+      ctx.lineTo(-10, 6);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = this.def.color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // hair ornament / bow accent
+      ctx.fillStyle = this.def.color;
+      ctx.beginPath();
+      ctx.moveTo(-5, -13); ctx.lineTo(-1, -16); ctx.lineTo(-1, -11); ctx.closePath();
+      ctx.moveTo(5, -13); ctx.lineTo(1, -16); ctx.lineTo(1, -11); ctx.closePath();
+      ctx.fill();
+    }
 
     // hitbox core visible when focused
     if (this.focused) {
