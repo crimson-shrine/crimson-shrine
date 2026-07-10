@@ -86,9 +86,10 @@ body {
   -webkit-backdrop-filter: blur(5px);
 }
 
+/* ---------- Title ---------- */
 .torii-mark {
-  width: 140px;
-  height: 140px;
+  width: 80px;
+  height: 80px;
   object-fit: contain;
   filter: drop-shadow(0 0 12px rgba(196, 40, 61, 0.4));
   display: inline-block;
@@ -273,17 +274,9 @@ body {
 }
 
 .char-sprite {
-  width: 42px; height: 42px;
-  border-radius: 50%;
+  width: 96px; height: 96px;
   border: 1px solid rgba(0,0,0,0.3);
-}
-
-.reimu-sprite {
-  background: radial-gradient(circle at 35% 30%, #ff6a80, #c4283d 70%);
-}
-
-.marisa-sprite {
-  background: radial-gradient(circle at 35% 30%, #ffe08a, #d4af6a 70%);
+  object-fit: contain;
 }
 
 /* ---------- Game screen ---------- */
